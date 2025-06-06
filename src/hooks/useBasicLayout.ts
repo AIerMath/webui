@@ -6,3 +6,4 @@ export function useBasicLayout() {
 
   return { isMobile }
 }
+
