@@ -1,0 +1,114 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Style TargetType="FlowDocument" x:Key="DocumentStyle">
+        <Setter Property="FontFamily"
+                Value="Calibri" />
+        <Setter Property="TextAlignment"
+                Value="Left" />
+        </Style>
+
+        <Style x:Key="H1Style"
+               TargetType="Paragraph">
+            <Setter Property="FontSize"
+                    Value="42" />
+            <Setter Property="Foreground"
+                    Value="{ui:ThemeResource TextFillColorPrimaryBrush}" />
+            <Setter Property="FontWeight"
+                    Value="Light" />
+        </Style>
+
+        <Style x:Key="H2Style"
+               TargetType="Paragraph">
+            <Setter Property="FontSize"
+                    Value="20" />
+            <Setter Property="Foreground"
+                    Value="{ui:ThemeResource TextFillColorPrimaryBrush}" />
+            <Setter Property="FontWeight"
+                    Value="Light" />
+        </Style>
+
+        <Style x:Key="H3Style"
+               TargetType="Paragraph">
+            <Setter Property="FontSize"
+                    Value="20" />
+            <Setter Property="Foreground"
+                    Value="{ui:ThemeResource TextFillColorPrimaryBrush}" />
+            <Setter Property="FontWeight"
+                    Value="Light" />
+        </Style>
+
+        <Style x:Key="H4Style"
+               TargetType="Paragraph">
+            <Setter Property="FontSize"
+                    Value="14" />
+            <Setter Property="Foreground"
+                    Value="{ui:ThemeResource TextFillColorPrimaryBrush}" />
+            <Setter Property="FontWeight"
+                    Value="Light" />
+        </Style>
+
+        <Style x:Key="LinkStyle"
+               TargetType="Hyperlink">
+            <Setter Property="TextDecorations"
+                    Value="None" />
+        </Style>
+
+        <Style x:Key="ImageStyle"
+               TargetType="Image">
+          <Setter Property="RenderOptions.BitmapScalingMode"
+                  Value="NearestNeighbor" />
+          <Style.Triggers>
+              <Trigger Property="Tag"
+                       Value="imageright">
+                  <Setter Property="Margin" 
+                          Value="20,0,0,0" />
+              </Trigger>
+          </Style.Triggers>
+      </Style>
+
+      <Style x:Key="SeparatorStyle"
+             TargetType="Separator">
+          <!--<Setter Property="X2"
+                  Value="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=FlowDocumentScrollViewer}}" />
+          <Setter Property="Stroke"
+                  Value="#99000000" />
+          <Setter Property="StrokeThickness"
+                  Value="2" />-->
+      </Style>
+
+      <!-- 
+         The Table's style don't seem to support border-collapse. 
+         By making the ruled line width 0.5 and applying it to cell and table, 
+         it looks like the ruled lines are not doubled. 
+     --> 
+     <Style x:Key="TableStyle" TargetType="Table"> 
+         <Setter Property="CellSpacing" Value="0"/> 
+         <Setter Property="BorderThickness" Value="0.5"/> 
+         <Setter Property="BorderBrush" Value="Gray"/> 
+         <Style.Resources> 
+             <Style TargetType="TableCell"> 
+                 <Setter Property="BorderThickness" Value="0.5"/> 
+                 <Setter Property="BorderBrush" Value="Gray"/> 
+                 <Setter Property="Padding" Value="2"/> 
+             </Style> 
+         </Style.Resources> 
+     </Style> 
+     <Style x:Key="TableHeaderStyle" TargetType="TableRowGroup"> 
+         <Setter Property="FontWeight" Value="DemiBold"/> 
+         <Setter Property="Background" Value="LightGray"/> 
+     </Style> 
+
+      <DrawingImage x:Key="PatreonIconColored">
+              <DrawingImage.Drawing>
+                      <DrawingGroup ClipGeometry="M0,-4.5 V251.5 H256 V0 H-4.5 Z">
+                              <DrawingGroup.Transform>
+                                      <TranslateTransform X="0" Y="4.5" />
+                              </DrawingGroup.Transform>
+                              <DrawingGroup Opacity="1">
+                                      <GeometryDrawing Brush="#FFFF424D" Geometry="F1 M256,256z M0,0z M45.1355837,0L45.1355837,246.35001 0,246.35001 0,0 45.1355837,0z M163.657111,0C214.65668,0 256,41.3433196 256,92.3428889 256,143.342458 214.65668,184.685778 163.657111,184.685778 112.657542,184.685778 71.3142222,143.342458 71.3142222,92.3428889 71.3142222,41.3433196 112.657542,0 163.657111,0z" />
+                              </DrawingGroup>
+                      </DrawingGroup>
+              </DrawingImage.Drawing>
+      </DrawingImage>
+</ResourceDictionary>

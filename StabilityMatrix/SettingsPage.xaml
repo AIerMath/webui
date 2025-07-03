@@ -1,0 +1,285 @@
+<Page
+    Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+    Loaded="SettingsPage_OnLoaded"
+    d:DataContext="{d:DesignInstance Type=viewModels:SettingsViewModel,
+                                     IsDesignTimeCreatable=True}"
+    d:DesignHeight="1300"
+    d:DesignWidth="1100"
+    mc:Ignorable="d"
+    ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
+    ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+    x:Class="StabilityMatrix.SettingsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:controls="clr-namespace:StabilityMatrix.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="using:StabilityMatrix"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="using:StabilityMatrix.Models"
+    xmlns:system="clr-namespace:System;assembly=System.Runtime"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    xmlns:viewModels="clr-namespace:StabilityMatrix.ViewModels"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:xaml="clr-namespace:MdXaml;assembly=MdXaml">
+
+    <Page.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+        <xaml:Markdown
+            AssetPathRoot="{x:Static system:Environment.CurrentDirectory}"
+            DocumentStyle="{StaticResource DocumentStyle}"
+            Heading1Style="{StaticResource H1Style}"
+            Heading2Style="{StaticResource H2Style}"
+            Heading3Style="{StaticResource H3Style}"
+            Heading4Style="{StaticResource H4Style}"
+            ImageStyle="{StaticResource ImageStyle}"
+            LinkStyle="{StaticResource LinkStyle}"
+            SeparatorStyle="{StaticResource SeparatorStyle}"
+            x:Key="Markdown" />
+        <xaml:TextToFlowDocumentConverter Markdown="{StaticResource Markdown}" x:Key="TextToFlowDocumentConverter" />
+
+        <Style
+            BasedOn="{StaticResource {x:Type ui:Flyout}}"
+            TargetType="{x:Type ui:Flyout}"
+            x:Key="VersionFlyoutStyle">
+            <Setter Property="Popup.StaysOpen" Value="True" />
+        </Style>
+    </Page.Resources>
+
+    <!--  Scroll view  -->
+    <ScrollViewer HorizontalScrollBarVisibility="Auto">
+        <Grid>
+            <StackPanel Orientation="Vertical">
+                <ui:Card Margin="8,16,8,8">
+                    <StackPanel HorizontalAlignment="Left" Orientation="Vertical">
+                        <TextBlock
+                            FontSize="16"
+                            FontWeight="Bold"
+                            Margin="0,8"
+                            Text="Theme" />
+                        <ComboBox
+                            ItemsSource="{Binding AvailableThemes}"
+                            Margin="8"
+                            SelectedItem="{Binding SelectedTheme, Mode=TwoWay}"
+                            Width="500" />
+                    </StackPanel>
+                </ui:Card>
+
+                <!--  Text2Image host port settings  -->
+                <ui:Card Margin="8" Visibility="{Binding IsDebugModeEnabled, Converter={StaticResource BoolToVisibilityConverter}}">
+                    <StackPanel HorizontalAlignment="Left">
+                        <TextBlock
+                            FontSize="16"
+                            FontWeight="Bold"
+                            Margin="0,8"
+                            Text="Text2Image" />
+                        <TextBlock
+                            Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                            Margin="4,0,0,4"
+                            Text="Uses the launch settings of the active package by default" />
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="0.2*" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="0.2*" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock
+                                        Margin="8"
+                                        Text="Host"
+                                        VerticalAlignment="Center" />
+                                    <ui:TextBox
+                                        ClearButtonEnabled="True"
+                                        Grid.Column="1"
+                                        Margin="8"
+                                        PlaceholderEnabled="True"
+                                        PlaceholderText="{Binding WebApiActivePackageHost}"
+                                        Width="280" />
+                                </Grid>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="0.2*" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock
+                                        Margin="8"
+                                        Text="Port"
+                                        VerticalAlignment="Center" />
+                                    <ui:TextBox
+                                        ClearButtonEnabled="True"
+                                        Grid.Column="1"
+                                        Margin="8"
+                                        PlaceholderEnabled="True"
+                                        PlaceholderText="{Binding WebApiActivePackagePort}"
+                                        Width="280" />
+                                </Grid>
+                            </StackPanel>
+                            <controls:RefreshBadge DataContext="{Binding Text2ImageRefreshBadge}" Grid.Column="1" />
+                        </Grid>
+                    </StackPanel>
+                </ui:Card>
+
+                <ui:Card Margin="8">
+                    <StackPanel HorizontalAlignment="Left" Orientation="Vertical">
+                        <TextBlock
+                            FontSize="16"
+                            FontWeight="Bold"
+                            Margin="0,8"
+                            Text="Checkpoint Manager Options" />
+                        <CheckBox 
+                            IsChecked="{Binding KeepFolderLinksOnShutdown}"
+                            Margin="8" 
+                            ToolTip="Normally removed on shutdown to allow the data folder to be moved without potential file explorer issues."
+                            Content="Keep shared checkpoints directory symbolic links on shutdown"/>
+                    </StackPanel>
+                </ui:Card>
+                
+                <ui:Card Margin="8">
+                    <StackPanel HorizontalAlignment="Left" Orientation="Vertical">
+                        <TextBlock
+                            FontSize="16"
+                            FontWeight="Bold"
+                            Margin="0,8"
+                            Text="Embedded Python" />
+                        <StackPanel Orientation="Horizontal">
+                            <ui:Button
+                                Command="{Binding PythonVersionCommand}"
+                                Content="Check Version Info"
+                                Margin="8" />
+                            <!--  Progress for python install if needed  -->
+                            <StackPanel Orientation="Horizontal" Visibility="{Binding IsPythonInstalling, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Collapsed}">
+                                <ui:ProgressRing
+                                    Height="24"
+                                    IsEnabled="{Binding IsPythonInstalling}"
+                                    IsIndeterminate="True"
+                                    Margin="8"
+                                    Width="24" />
+                                <TextBlock
+                                    Margin="4"
+                                    Text="Preparing Environment"
+                                    VerticalAlignment="Center" />
+                            </StackPanel>
+                        </StackPanel>
+                    </StackPanel>
+                </ui:Card>
+
+                <ui:Card Margin="8" Visibility="{Binding IsDebugModeEnabled, Converter={StaticResource BoolToVisibilityConverter}}">
+                    <StackPanel HorizontalAlignment="Left" Orientation="Vertical">
+                        <TextBlock
+                            FontSize="16"
+                            FontWeight="Bold"
+                            Margin="0,8"
+                            Text="Debug" />
+                        <TextBlock Margin="8" Text="{Binding GpuInfo, FallbackValue=3dfx Voodoo 5 6000 - 128MB VRAM}" />
+                        <TextBlock Margin="8" Text="{Binding TestProperty, FallbackValue=TestProperty}" />
+                        <ui:Flyout
+                            HorizontalAlignment="Right"
+                            IsOpen="{Binding IsFileSearchFlyoutOpen, Mode=TwoWay}"
+                            Placement="Top"
+                            Style="{StaticResource VersionFlyoutStyle}">
+                            <ProgressBar MinWidth="100" Value="{Binding FileSearchProgress}" />
+                        </ui:Flyout>
+                        <StackPanel Orientation="Horizontal">
+                            <Button
+                                Command="{Binding AddInstallationCommand}"
+                                Content="Add Installation"
+                                Margin="8" />
+                            <Button
+                                Command="{Binding PingWebApiCommand}"
+                                Content="Ping Web API"
+                                Margin="8" />
+                            <Button
+                                Command="{Binding DebugTriggerExceptionCommand}"
+                                Content="Trigger Exception"
+                                Margin="8" />
+                            <Button
+                                Command="{Binding ModelFileSearchCommand}"
+                                Content="Model File Search"
+                                Margin="8" />
+                            <Button
+                                Command="{Binding WebViewDemoCommand}"
+                                Content="Open WebView"
+                                Margin="8" />
+                        </StackPanel>
+                    </StackPanel>
+                </ui:Card>
+
+                <ui:Card Margin="8">
+                    <StackPanel HorizontalAlignment="Left" Orientation="Vertical">
+                        <TextBlock
+                            FontSize="16"
+                            FontWeight="Bold"
+                            Margin="0,8"
+                            Text="Directories" />
+                        <StackPanel Orientation="Horizontal">
+                            <ui:Button
+                                Command="{Binding OpenAppDataDirectoryCommand}"
+                                Content="App Data"
+                                Margin="8">
+                                <ui:Button.Icon>
+                                    <ui:SymbolIcon Margin="4" Symbol="Open32" />
+                                </ui:Button.Icon>
+                            </ui:Button>
+                            <ui:Button
+                                Command="{Binding OpenLibraryDirectoryCommand}"
+                                Content="Library"
+                                Margin="8">
+                                <ui:Button.Icon>
+                                    <ui:SymbolIcon Margin="4" Symbol="Open32" />
+                                </ui:Button.Icon>
+                            </ui:Button>
+                        </StackPanel>
+                    </StackPanel>
+                </ui:Card>
+
+                <ui:Card Margin="8">
+                    <StackPanel HorizontalAlignment="Left" Orientation="Vertical">
+                        <TextBlock
+                            FontSize="16"
+                            FontWeight="Bold"
+                            Margin="0,8"
+                            Text="About" />
+                        <ui:Image
+                            Height="112"
+                            HorizontalAlignment="Left"
+                            HorizontalContentAlignment="Left"
+                            Margin="8"
+                            Source="pack://application:,,,/Assets/Icon.png"
+                            Width="112" />
+                        <TextBlock
+                            FontWeight="Medium"
+                            Margin="8"
+                            Text="Stability Matrix" />
+                        <Grid>
+                            <ui:Flyout
+                                Content="{Binding VersionFlyoutText}"
+                                IsOpen="{Binding IsVersionFlyoutOpen, Mode=TwoWay}"
+                                Name="VersionFlyout"
+                                Placement="Top"
+                                Style="{StaticResource VersionFlyoutStyle}"
+                                Visibility="Visible" />
+                            <Button
+                                Background="Transparent"
+                                BorderThickness="0"
+                                Command="{Binding AppVersionClickCommand}"
+                                Content="{Binding AppVersion, Mode=OneWay, FallbackValue=Version 0.0.0}"
+                                Margin="8,0,8,8"
+                                Padding="2,0,2,0" />
+                        </Grid>
+
+
+                        <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
+                            <ui:Button
+                                Command="{Binding OpenLicenseDialogCommand}"
+                                Content="License and Open Source Notices"
+                                HorizontalAlignment="Left"
+                                Margin="8" />
+                        </StackPanel>
+                    </StackPanel>
+                </ui:Card>
+            </StackPanel>
+        </Grid>
+    </ScrollViewer>
+</Page>

@@ -1,0 +1,188 @@
+﻿<ui:ContentDialog
+    CloseButtonText="Close"
+    DialogHeight="616"
+    DialogWidth="760"
+    Loaded="LaunchOptionsDialog_OnLoaded"
+    d:DataContext="{d:DesignInstance Type=viewModels:LaunchOptionsDialogViewModel,
+                                     IsDesignTimeCreatable=True}"
+    d:DesignHeight="616"
+    d:DesignWidth="760"
+    mc:Ignorable="d"
+    ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
+    ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+    x:Class="StabilityMatrix.LaunchOptionsDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:converters="clr-namespace:StabilityMatrix.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:StabilityMatrix"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="clr-namespace:StabilityMatrix.Core.Models;assembly=StabilityMatrix.Core"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    xmlns:viewModels="clr-namespace:StabilityMatrix.ViewModels"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <ui:ContentDialog.Resources>
+        <!--  ReSharper disable once Xaml.StaticResourceNotResolved  -->
+        <Style BasedOn="{StaticResource {x:Type ui:ContentDialog}}" TargetType="{x:Type local:LaunchOptionsDialog}" />
+
+        <converters:LaunchOptionConverter x:Key="LaunchOptionConverter" />
+        <converters:LaunchOptionIntDoubleConverter x:Key="LaunchOptionIntDoubleConverter" />
+        <converters:ValueConverterGroup x:Key="LaunchOptionIntToStringConverter">
+            <converters:LaunchOptionConverter />
+            <converters:LaunchOptionIntDoubleConverter />
+        </converters:ValueConverterGroup>
+
+        <!--  Bool type card (checkboxes)  -->
+        <DataTemplate DataType="{x:Type models:LaunchOptionCard}" x:Key="LaunchOptionCardBooleanDataTemplate">
+            <ui:Card Margin="16,8,8,8">
+                <StackPanel
+                    HorizontalAlignment="Left"
+                    Margin="8,0,8,0"
+                    Orientation="Vertical">
+                    <TextBlock
+                        FontSize="16"
+                        FontWeight="Bold"
+                        Margin="0,8"
+                        Text="{Binding Title}"
+                        TextWrapping="Wrap" />
+                    <StackPanel Orientation="Horizontal">
+                        <ItemsControl ItemsSource="{Binding Options}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <CheckBox Content="{Binding Name}" IsChecked="{Binding OptionValue, Converter={StaticResource LaunchOptionConverter}}" />
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </StackPanel>
+            </ui:Card>
+        </DataTemplate>
+
+        <!--  String type card (textboxes)  -->
+        <DataTemplate DataType="{x:Type models:LaunchOptionCard}" x:Key="LaunchOptionCardStringDataTemplate">
+            <ui:Card Margin="16,8,8,8">
+                <StackPanel
+                    HorizontalAlignment="Stretch"
+                    Margin="8,0,8,0"
+                    Orientation="Vertical">
+                    <TextBlock
+                        FontSize="16"
+                        FontWeight="Bold"
+                        Margin="0,8"
+                        Text="{Binding Title}"
+                        TextWrapping="Wrap" />
+                    <ItemsControl ItemsSource="{Binding Options}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel HorizontalAlignment="Stretch" Orientation="Vertical">
+                                    <Label Content="{Binding Name}" />
+                                    <ui:TextBox
+                                        HorizontalAlignment="Stretch"
+                                        Margin="8"
+                                        PlaceholderEnabled="{Binding HasDefaultValue}"
+                                        PlaceholderText="{Binding DefaultValue}"
+                                        Text="{Binding OptionValue, Converter={StaticResource LaunchOptionConverter}}"
+                                        VerticalAlignment="Stretch" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </ui:Card>
+        </DataTemplate>
+
+        <!--  Int type card (textboxes)  -->
+        <DataTemplate DataType="{x:Type models:LaunchOptionCard}" x:Key="LaunchOptionCardIntDataTemplate">
+            <ui:Card Margin="16,8,8,8">
+                <StackPanel
+                    HorizontalAlignment="Stretch"
+                    Margin="8,0,8,0"
+                    Orientation="Vertical">
+                    <TextBlock
+                        FontSize="16"
+                        FontWeight="Bold"
+                        Margin="0,8"
+                        Text="{Binding Title}"
+                        TextWrapping="Wrap" />
+                    <ItemsControl ItemsSource="{Binding Options}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel HorizontalAlignment="Stretch" Orientation="Vertical">
+                                    <Label Content="{Binding Name}" />
+                                    <ui:NumberBox
+                                        HorizontalAlignment="Stretch"
+                                        Margin="8"
+                                        PlaceholderText="{Binding DefaultValue, Mode=OneWay, Converter={StaticResource LaunchOptionConverter}}"
+                                        SpinButtonPlacementMode="Compact"
+                                        ValidationMode="Disabled"
+                                        Value="{Binding OptionValue, Converter={StaticResource LaunchOptionIntDoubleConverter}, Mode=TwoWay}"
+                                        VerticalAlignment="Stretch" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </ui:Card>
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type models:LaunchOptionCard}" x:Key="LaunchOptionCardDataTemplate">
+            <ContentControl Content="{Binding}">
+                <ContentControl.Style>
+                    <Style TargetType="{x:Type ContentControl}">
+                        <Setter Property="ContentTemplate" Value="{StaticResource LaunchOptionCardBooleanDataTemplate}" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Type}" Value="string">
+                                <Setter Property="ContentTemplate" Value="{StaticResource LaunchOptionCardStringDataTemplate}" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding Type}" Value="int">
+                                <Setter Property="ContentTemplate" Value="{StaticResource LaunchOptionCardIntDataTemplate}" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </ContentControl.Style>
+            </ContentControl>
+        </DataTemplate>
+    </ui:ContentDialog.Resources>
+
+    <ui:ContentDialog.Title>
+        <StackPanel
+            HorizontalAlignment="Stretch"
+            Margin="8,0,8,0"
+            Orientation="Vertical">
+            <!--  Title  -->
+            <TextBlock
+                FontSize="24"
+                FontWeight="Bold"
+                Margin="8,0,8,8"
+                Text="{Binding Title}"
+                TextWrapping="Wrap" />
+            <!--  Search box  -->
+            <ui:TextBox
+                HorizontalAlignment="Stretch"
+                IconPlacement="Right"
+                Margin="0,8,0,0"
+                MaxWidth="300"
+                PlaceholderEnabled="True"
+                PlaceholderText="Search..."
+                Text="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                VerticalAlignment="Top"
+                Visibility="{Binding IsSearchBoxEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
+                x:Name="SearchBox">
+                <ui:TextBox.Icon>
+                    <ui:SymbolIcon Symbol="Search28" />
+                </ui:TextBox.Icon>
+            </ui:TextBox>
+        </StackPanel>
+    </ui:ContentDialog.Title>
+
+    <!--  Option Cards  -->
+    <ItemsControl
+        HorizontalAlignment="Stretch"
+        HorizontalContentAlignment="Center"
+        ItemTemplate="{StaticResource LaunchOptionCardDataTemplate}"
+        ItemsSource="{Binding FilteredCards}"
+        Margin="16,0,0,0"
+        MaxWidth="400"
+        MinWidth="300" />
+
+</ui:ContentDialog>
